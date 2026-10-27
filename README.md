@@ -14,6 +14,8 @@ The game is supposed to work on old and new models. I've only tested the game in
 
 I post updates on my YouTube channel: https://youtube.com/@ShadowNetter
 
+Latest video on the game: https://www.youtube.com/watch?v=-VuvB34u0ao
+
 ## A.I. Usage
 
 A.I. is only used to locate errors in the code when they show up. A.I. is **NOT** used to generate code nor art.
@@ -33,6 +35,14 @@ In evangelion-angel-attack you play as either Shinji, Asuka or Rei and face seve
 - [x] Mastery menu
 - [x] Skins menu
 - [ ] Actual game part of the game
+- [ ] Create game wiki/tutorial
+  
+## Contributing
+
+All suggestions/bug fixes/etc. are welcome.
+
+Things I need help with currently:
+- Creating a Makefile 
 
 ---
 
