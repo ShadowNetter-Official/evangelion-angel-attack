@@ -1,0 +1,27 @@
+--atlas -f rgba -z auto
+
+ability_locked.png
+ability_locked_highlighted.png
+ability_unlocked.png
+ability_unlocked_highlighted.png
+absolute_accuracy.png
+absolute_accuracy_highlighted.png
+celestial_gift.png
+celestial_gift_highlighted.png
+counter.png
+counter_highlighted.png
+divine_intervention.png
+divine_intervention_highlighted.png
+double_or_nothing.png
+double_or_nothing_highlighted.png
+eek_run.png
+eek_run_highlighted.png
+healing_mist.png
+healing_mist_highlighted.png
+miracle_sync.png
+miracle_sync_highlighted.png
+overclock.png
+overclock_highlighted.png
+ruthless.png
+ruthless_highlighted.png
+

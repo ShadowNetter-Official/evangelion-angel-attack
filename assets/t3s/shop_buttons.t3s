@@ -1,0 +1,5 @@
+--atlas -f rgba -z auto
+
+equip.png
+unequip.png
+unlock.png

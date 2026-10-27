@@ -1,0 +1,10 @@
+--atlas -f rgba -z auto
+
+play_button.png
+play_button_highlighted.png
+pilot_button.png
+pilot_button_highlighted.png
+options_button.png
+options_button_highlighted.png
+exit_button.png
+exit_button_highlighted.png

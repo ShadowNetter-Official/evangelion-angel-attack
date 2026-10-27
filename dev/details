@@ -1,0 +1,31 @@
+font size: 18
+
+TOP
+SCREEN_WIDTH = 400 px
+SCREEN_HEIGHT = 240 px
+
+BOTTOM
+SCREEN_WIDTH = 320
+SCREEN_HEIGHT = 240
+
+TILE SIZE = 16x16 px
+
+TOP
+GAME_WIDTH = 25 tiles
+GAME_HEIGHT =  15 tiles
+
+BOTTOM
+GAME_WIDTH = 20 tiles
+GAME_HEIGHT = 15 tiles
+
+assets:
+
+evangelion_logo: 400x240 px
+press_start: 128x16 px
+start_screen_buttons: 288x16, 2 sprites, first is 0->143, second, 144->288
+first is normal, second is highlighted
+character_selection: 224x128 px, 2 sprites, first is 0->111, second, 112->224,
+second is highlighted, first is normal
+
+
+middle for char selection: 144, 56 

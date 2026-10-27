@@ -1,0 +1,4 @@
+--atlas -f rgba -z auto
+
+new_game_button.png
+new_game_button_highlighted.png

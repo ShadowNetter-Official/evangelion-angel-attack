@@ -1,0 +1,51 @@
+respect lowercase:
+
+absolute accuracy: player's attack doesn't miss
+celestial gift: summons the Spear of Longinus to be used in combat
+counter: if player doesn't take damage from enemy's previous attack, player's next attack deals
+30 more damage points
+divine intervention: when player is at less than 20% health, Kaworu appears and prevents the player
+from taking damage for one round
+double or nothing: player's attack does either double damage or does no damage
+eek! run!: player can't attack for one round but the next 2 rounds, the enemy attacks become easier
+to evade
+healing mist: player can opt not to attack to regenerate health
+miracle sync: when player is at 10% sync rate or less, a special attack is unlocked and player's
+sync rate increases
+overclock: attack increases by 75% but AT field gets set to 0 and player takes 40 damage points
+ruthless: when enemy is at 10% health or less, attack gets raised significantly
+
+name
+(frequency)
+
+frequency: single use or always
+
+name + frequency -> all caps
+text: see above
+
+
+in order of abilities:
+
+always
+single use
+single use
+single use
+single use
+single use
+always
+single use
+single use
+always
+
+order:
+
+absolute accuracy
+celestial gift
+counter
+divine intervention
+double or nothing
+eek run
+healing mist
+miracle sync
+overclock
+ruthless

@@ -1,0 +1,4 @@
+--atlas -f rgba -z auto
+
+exit_button.png
+exit_button_highlighted.png

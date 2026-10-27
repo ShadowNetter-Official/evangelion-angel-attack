@@ -1,0 +1,126 @@
+{
+  "main": {
+    "current_pilot": "null",
+    "angels_beat": 0,
+    "main_game_beat": false,
+    "level_points": 0,
+    "endless_highscore": 0
+  },
+
+  "pilots": {
+    "shinji": {
+      "mastery_unlocked": false,
+      "ability slots": 1,
+      "unlocked": false,
+      "current_skin": "default_skin",
+      "stats": {
+        "max_health": 0,
+        "attack": 0,
+        "at_field": 0,
+        "default_sync_rate": 0,
+        "bond": 0
+      },
+      "active_abilities": [
+        "divine_intervention"
+      ],
+      "unlocked_abilities": {
+        "divine_intervention": true,
+        "miracle_sync": false,
+        "celestial_gift": false,
+        "ruthless": false,
+        "counter": false,
+        "healing_mist": false,
+        "absolute_accuracy": false,
+        "overclock": false,
+        "double_or_nothing": false,
+        "eek_run": false
+      },
+      "unlocked_skins": {
+        "default_skin": true,
+        "master": false
+      },
+      "mastery": {
+        "angels_beat_hard": 0,
+        "ability_slots": 0,
+        "max_stats": false,
+        "beat_1_helpless": false
+      }
+    },
+    "asuka": {
+      "mastery_unlocked": false,
+      "ability slots": 1,
+      "unlocked": false,
+      "current_skin": "default_skin",
+      "stats": {
+        "max_health": 0,
+        "attack": 0,
+        "at_field": 0,
+        "default_sync_rate": 0,
+        "bond": 0
+      },
+      "active_abilities": [
+        "miracle_sync"
+      ],
+      "unlocked_abilities": {
+        "divine_intervention": false,
+        "miracle_sync": true,
+        "celestial_gift": false,
+        "ruthless": false,
+        "counter": false,
+        "healing_mist": false,
+        "absolute_accuracy": false,
+        "overclock": false,
+        "double_or_nothing": false,
+        "eek_run": false
+      },
+      "unlocked_skins": {
+        "default_skin": true,
+        "master": false
+      },
+      "mastery": {
+        "angels_beat_hard": 0,
+        "ability_slots": 0,
+        "max_stats": false,
+        "beat_1_helpless": false
+      }
+    },
+    "rei": {
+      "mastery_unlocked": false,
+      "ability slots": 1,
+      "unlocked": false,
+      "current_skin": "default_skin",
+      "stats": {
+        "max_health": 0,
+        "attack": 0,
+        "at_field": 0,
+        "default_sync_rate": 0,
+        "bond": 0
+      },
+      "active_abilities": [
+        "celestial_gift"
+      ],
+      "unlocked_abilities": {
+        "divine_intervention": false,
+        "miracle_sync": false,
+        "celestial_gift": true,
+        "ruthless": false,
+        "counter": false,
+        "healing_mist": false,
+        "absolute_accuracy": false,
+        "overclock": false,
+        "double_or_nothing": false,
+        "eek_run": false
+      },
+      "unlocked_skins": {
+        "default_skin": true,
+        "master": false
+      },
+      "mastery": {
+        "angels_beat_hard": 0,
+        "ability_slots": 0,
+        "max_stats": false,
+        "beat_1_helpless": false
+      }
+    }
+  }
+}

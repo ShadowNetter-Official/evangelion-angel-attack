@@ -1,0 +1,211 @@
+Game Name: "Evangelion: Angel Attack"
+
+You can pick between 3 characters to unlock in the beginning: Shinji, Rei, Asuka
+
+Gameplay: player picks an angel to fight, the fighting consists of player attacks
+and from enemy attacks, each win is graded from F to S and you receive level points
+based on performance, level points can be used to improve stats, purchase abilities,
+unlock characters, unlock character skins, unlock ability slots
+
+Player stats:
+
+attack -> dictates damage
+at field -> dictates defense
+default sync rate -> sets default sync rate
+  sync rate -> acts on damage, defense and accuracy
+bond: acts mainly on accuracy and buffs sync rate
+max health
+
+Player attacks:
+
+resync:
+
+Evangelion unit's heart beats, player has to sync button presses with the audio.
+raises sync rate by x%
+
+multi-blow:
+
+Minecraft fishing mechanic inspired: 1 area, spinner gets quicker, area gets smaller
+and less time available.
+deals x damage per blow
+
+knife attack:
+
+friday knight funkin mechanic
+deals x damage times success percentage
+
+precision strike:
+
+reaction speed test: Evangelion unit scans enemy until weak spot appears, player 
+then has to click
+deals x damage affected by delay
+
+Battle Mechanics:
+
+angels have body parts/zones, the core is the weak zone, it's harder to destroy
+but insta kills, otherwise, player needs to destroy all other body parts
+
+berserk:
+
+when sync rate is 100%, player can enter berserk mode, this combines multi-blow and
+precision strike, and after, set at field to 100%, but, this then sets sync rate
+down to 1% and self inflicts x damage
+
+Enemy attacks:
+
+bullet hell
+
+laser beams on screen: lasers cover a part of the screen (horizontaly or veritcally)
+and slides on its axis, disapears after x time
+
+falling attack: Evangelion unit is running on a road with 3 lanes, enemy launches
+obstacles on lanes, unit has to dodge by switching lanes
+
+weeping angels: enemy drops pellets that go towards the player, but when the player 
+looks at them, they freeze
+
+minefield: the area gets littered with timed bombs
+
+angel escape: angel grabs eva unit and you have to press the correct buttons when
+they appear on screen to escape
+
+Abilities (only allowed once per fight, except when specified):
+
+Divine Intervention: When player gets to x% or less health, kaworu appears and 
+for one round, player can't take damage
+
+Miracle Sync: When player gets to x% or less sync rate, plays sync game: success
+rate deals attack and regains x sync rate
+
+Celestial Gift: summons spear of longinus and throws it at random body part, deals
+x damage and doesn't miss
+
+Ruthless: when enemy at x% or less health, attack gets raised significantly (always)
+
+Counter: if player doesn't take damage from previous enemy attack, player's
+attack deals x more damage points
+
+Healing Mist: if player doesn't attack, like tony hawk freak out mechanic, and 
+hp returns based on success (always)
+
+Absolute Accuracy: Next attack doesn't miss (always)
+
+Overclock: Attack stat goes to x% more but sets AT field to 0 and deals x self damage
+
+Double or Nothing: your next attack does either double damage or misses
+
+Eek! Run! : Skip your attack but the next 2 enemy attacks are easier to evade
+
+Game Modes:
+
+difficulties:
+
+Easy: enemies deal less damage, it's easier to attack, gives less level points
+
+Vanilla: normal difficulty
+
+Hard: enemies deal more damage, it's hareder to attack, gives more level points
+
+helpless: can't attack, enemies get an endurance bar, have to survive until bar gets
+to zero, no abilities, gives a lot more level points
+
+modes:
+
+marathon: face up against every angel, one by one, no healing, lets player unlock any
+ability
+
+endless: face up against angels in random order, on by one until you die, plays
+for highscore rather than points or anything
+
+randomized: player faces up against a random angel, with random abilities and random attacks
+and a random modifier
+
+modifiers: increase enemy health by x%, increase enemy attack by x%, increase player attack
+by x%, reduce player max health by x%, increase player max health by x%
+
+
+pilot mastery: the player can achieve pilot mastery to unlock a master pilot cosmetic
+requirements: beat all main angels in hard mode, unlock all ability slots (4), max out
+stats, beat 1 angel in helpless mode
+
+when the first main angels have been completed, the user unlocks harder variants of the angels
+
+
+angels (16):
+
+Adam
+Lilith
+Sachiel
+Shamshel
+Ramiel
+Gaghiel
+Israfel
+Sandalphon
+Matarael
+Sahaquiel
+Ireul
+Leliel
+Bardiel
+Zeruel
+Arael
+Armisael
+
+stats:
+
+at field: 0-100
+attack: 0-100
+bond: 0-100
+default_sync_rate: 0-100
+max_health: 100-200
+
+default stats:
+
+shinji:
+
+at field: 5
+attack: 5
+bond: 15
+default_sync_rate: 50
+max_health: 100
+
+asuka:
+
+at field: 5
+attack: 5
+bond: 5
+default_sync_rate: 65
+max_health: 100
+
+rei:
+
+at field: 15
+attack: 5
+bond: 5
+default_sync_rate: 50
+max_health: 100
+
+prices:
+
+stats: 75LP per stats boost (increases by 5)
+
+unlock slot: 2K increases by 1K per slot unlocked
+
+Divine Intervention: 2.5K 
+
+Miracle Sync: 1.5K
+
+Celestial Gift: 2K
+
+Ruthless: 1.75K
+
+Counter: 1.25K
+
+Healing Mist: 1.75K
+
+Absolute Accuracy: 2.5K
+
+Overclock: 1.25K
+
+Double or Nothing:  750
+
+Eek! Run!: 750
