@@ -14,9 +14,9 @@ The game is supposed to work on old and new models. I've only tested the game in
 
 I post updates on my YouTube channel: https://youtube.com/@ShadowNetter
 
-## AI Usage
+## A.I. Usage
 
-AI is only used to locate errors in the code when they show up. AI is NOT used to generate code nor art.
+A.I. is only used to locate errors in the code when they show up. A.I. is **NOT** used to generate code nor art.
 
 ## Gameplay
 
