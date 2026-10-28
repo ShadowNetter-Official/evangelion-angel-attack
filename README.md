@@ -42,7 +42,8 @@ In evangelion-angel-attack you play as either Shinji, Asuka or Rei and face seve
 All suggestions/bug fixes/etc. are welcome.
 
 Things I need help with currently:
-- Creating a Makefile 
+- Creating a Makefile
+- Pixel art
 
 ---
 

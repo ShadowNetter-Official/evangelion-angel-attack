@@ -4,3 +4,24 @@ player suggestions:
 general:
   music
   game
+
+current:
+  game mode selection menu:
+    single battle
+    marathon
+    randomizer
+    endless mode
+    tutorial -> always first option
+
+
+  top screen: 
+    art
+  bottom screen: 
+    mode name + info
+    b for back
+    a to confirm
+
+specific:
+
+  marathon pixel art
+  endless mode pixel art
