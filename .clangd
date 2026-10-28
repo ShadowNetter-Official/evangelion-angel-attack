@@ -1,0 +1,26 @@
+CompileFlags:
+  Add:
+    - "-I/home/debian/code/c/3ds/evangelion/include"
+    - "-I/home/debian/code/c/3ds/evangelion/build"
+
+    - "-march=armv6k"
+    - "-mtune=mpcore"
+    - "-mfloat-abi=hard"
+    - "-mtp=soft"
+    - "--target=arm-none-eabi"
+
+    - "-D__3DS__"
+    - "-DARM11"
+    - "-D_3DS"
+
+    - "-I/opt/devkitpro/libctru/include"
+    - "-I/opt/devkitpro/portlibs/3ds/include"
+    - "-I/opt/devkitpro/devkitARM/arm-none-eabi/include"
+
+    - "-mword-relocations"
+    - "-ffunction-sections"
+
+  Compiler: /opt/devkitpro/devkitARM/bin/arm-none-eabi-gcc
+
+Index:
+  Background: Build

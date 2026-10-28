@@ -1,18 +1,9 @@
 /*
 
-  TODO:
+  reminders:
+    when adding/subtracting to level points, check limits (0 <= lp <= 9999)
+    make sure endless_highscore doesn't go over int limit (32bit for 3ds)
 
-  implement ability shop menu
-
-  REPLACE: TextBufClear with TextBufDelete for exiting out of functions, make sure not to
-  replace that when simply updating text such as with level points
-
-C2D_SpriteSheetFree(Sprite.sprite_sheet);
-load_data & when adding points: 
-  make sure level points don't go over 9999
-load_data & when endless mode:
-  make sure endless_highscore doesn't go over int limit (32bit for 3ds)
-add audio
 */
 
 #include <3ds.h>
@@ -47,6 +38,9 @@ add audio
 #define GAME_TITLE "Evangelion: Angel Attack"
 
 #define ABILITY_COUNT 10
+
+
+C2D_Font MAIN_FONT;
 
 
 typedef struct Colours {
@@ -898,7 +892,7 @@ int main_menu(C3D_RenderTarget* top_screen, C3D_RenderTarget* bottom_screen, Col
 
   C2D_SpriteSheetFree(main_menu_buttons.sprite_sheet);
   C2D_SpriteSheetFree(main_menu_bg.sprite_sheet);
-  C2D_TextBufClear(level_points.buffer);
+  C2D_TextBufDelete(level_points.buffer);
   return selected_option;
 }
 
@@ -4320,10 +4314,9 @@ void close_game(SaveFile save_data) {
 
 Text load_text(char* message) {
   Text output;
-  C2D_Font font = C2D_FontLoad("romfs:/main_font.bcfnt");
   output.buffer = C2D_TextBufNew(10);
 
-  C2D_TextFontParse(&output.text, font, output.buffer, message);
+  C2D_TextFontParse(&output.text, MAIN_FONT, output.buffer, message);
   C2D_TextOptimize(&output.text);
 
   return output;
@@ -4860,6 +4853,8 @@ SaveFile load_save_file(void) {
   output.main.current_pilot = strdup(cJSON_GetObjectItemCaseSensitive(main, "current_pilot")->valuestring);
   output.main.endless_highscore = cJSON_GetObjectItemCaseSensitive(main, "endless_highscore")->valueint;
   output.main.level_points = cJSON_GetObjectItemCaseSensitive(main, "level_points")->valueint;
+  if (output.main.level_points < 0) { output.main.level_points = 0; }
+  else if (output.main.level_points > 9999) { output.main.level_points = 9999; }
 
   cJSON* pilots = cJSON_GetObjectItemCaseSensitive(root, "pilots");
 
@@ -5033,6 +5028,7 @@ void system_init(void) {
   C2D_Init(C2D_DEFAULT_MAX_OBJECTS);
   C2D_Prepare();
   consoleClear();
+  MAIN_FONT = C2D_FontLoad("romfs:/main_font.bcfnt");
 }
 
 bool audio_init(void) {
@@ -5069,6 +5065,7 @@ void system_exit(void) {
   SDL_Quit();
   romfsExit();
   gfxExit();
+  C2D_FontFree(MAIN_FONT);
 }
 
 Sprite load_sprite(char* path) {
