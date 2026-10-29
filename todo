@@ -11,22 +11,7 @@ general:
     add story elemnts/funny dialogue
 
 current:
-  game mode selection menu:
-    single battle
-    marathon
-    randomizer
-    endless mode
-    tutorial -> always first option
-
-
-  top screen: 
-    art
-  bottom screen: 
-    mode name + info
-    b for back
-    a to confirm
+  refactor main loop
 
 specific:
-  
-  game modes info pixel art
-  fix aseprite because it keeps fucking crashing
+

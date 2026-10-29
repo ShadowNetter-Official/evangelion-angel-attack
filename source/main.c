@@ -43,6 +43,11 @@
 C2D_Font MAIN_FONT;
 
 
+typedef struct GameModeOutput {
+  int game_mode;
+  bool valid;
+} GameModeOutput;
+
 typedef struct Colours {
   u32 white;
   u32 black;
@@ -272,6 +277,8 @@ bool check_mastery(SaveFile* save_data, char* pilot);
 bool mastery_menu(SaveFile* save_data, C3D_RenderTarget* top_screen, C3D_RenderTarget* bottom_screen, Colours colour_palette);
 bool unlock_cutscene(char* pilot, Colours colour_palette, C3D_RenderTarget* top_screen, C3D_RenderTarget* bottom_screen);
 bool stats_menu(SaveFile* save_data, C3D_RenderTarget* top_screen, C3D_RenderTarget* bottom_screen, Colours colour_palette);
+GameModeOutput game_mode_menu(C3D_RenderTarget* top_screen, C3D_RenderTarget* bottom_screen, Colours colour_palette);
+int wrap(int index, int range);
 
 
 int main(void) {
@@ -369,7 +376,15 @@ int main(void) {
         }
         break;
       case S_PLAY:
-        // TEMP
+        // TEST
+        GameModeOutput gmo = game_mode_menu(top_screen, bottom_screen, colour_palette);
+        if (!gmo.valid) {
+          log_error("ERROR: Failed to process game mode menu");
+          close_game(save_data);
+          return 1;
+        } else {
+          // TEMP
+        }
         break;
       case S_PILOT:
         int pilot_menu_continuation = pilot_menu(top_screen, bottom_screen, colour_palette, &save_data);
@@ -415,7 +430,6 @@ int main(void) {
             }
             break;
           case PS_STATS:
-            // TESTING
             if (!stats_menu(&save_data, top_screen, bottom_screen, colour_palette)) {
               log_error("ERROR: Failed to load stats menu");
               close_game(save_data);
@@ -4212,7 +4226,148 @@ bool stats_menu(SaveFile* save_data, C3D_RenderTarget* top_screen, C3D_RenderTar
   return true;
 }
 
+GameModeOutput game_mode_menu(C3D_RenderTarget* top_screen, C3D_RenderTarget* bottom_screen, Colours colour_palette) {
+  /*
+
+    info coords: (4;3)
+
+    prev: (32; 56)
+    current: (114+32; 56)
+    next: (228+32; 56)
+    
+    assets:
+
+    game_mode_top.t3x
+    game_mode_dark.t3x
+    game_mode_info.t3x
+    game_mode_bg.t3x
+
+    endless
+    marathon
+    randomizer
+    single_battle
+    tutorial
+
+    output:
+      valid: false on error else true
+      game_mode: -1 on error/nothing else a valid game mode
+  */
+
+  GameModeOutput output;
+  output.valid = false;
+  output.game_mode = -1;
+
+  Sprite top_highlighted = load_sprite("romfs:/game_mode_top.t3x");
+  if (!top_highlighted.valid) {
+    log_error("ERROR: Failed to load romfs:/game_mode_top.t3x");
+    return output;
+  }
+
+  Sprite top_dark = load_sprite("romfs:/game_mode_dark.t3x");
+  if (!top_dark.valid) {
+    C2D_SpriteSheetFree(top_highlighted.sprite_sheet);
+    log_error("ERROR: Failed to load romfs:/game_mode_dark.t3x");
+    return output;
+  }
+  
+  Sprite info = load_sprite("romfs:/game_mode_info.t3x");
+  if (!info.valid) {
+    C2D_SpriteSheetFree(top_highlighted.sprite_sheet);
+    C2D_SpriteSheetFree(top_dark.sprite_sheet);
+    log_error("ERROR: Failed to load romfs:/game_mode_info.t3x");
+    return output;
+  }
+
+  Sprite bg = load_sprite("romfs:/game_mode_bg.t3x");
+  if (!bg.valid) {
+    C2D_SpriteSheetFree(top_highlighted.sprite_sheet);
+    C2D_SpriteSheetFree(top_dark.sprite_sheet);
+    C2D_SpriteSheetFree(info.sprite_sheet);
+    log_error("ERROR: Failed to load romfs:/game_mode_bg.t3x");
+    return output;
+  }
+
+  enum {
+    ENDLESS,
+    MARATHON,
+    RANDOMIZER,
+    SINGLE_BATTLE,
+    TUTORIAL,
+  };
+
+  C2D_Sprite top_highlighted_array[TUTORIAL+1];
+  C2D_Sprite top_dark_array[TUTORIAL+1];
+  C2D_Sprite info_array[TUTORIAL+1];
+
+  C2D_Sprite bg_sprite = bg.sprite;
+  C2D_SpriteSetCenter(&bg_sprite, 0, 0);
+  C2D_SpriteSetPos(&bg_sprite, 0, 0);
+
+  for (int i = 0; i < TUTORIAL+1; i++) {
+    C2D_SpriteFromSheet(&top_dark_array[i], top_dark.sprite_sheet, i);
+    C2D_SpriteFromSheet(&top_highlighted_array[i], top_highlighted.sprite_sheet, i);
+    C2D_SpriteFromSheet(&info_array[i], info.sprite_sheet, i);
+
+    C2D_SpriteSetCenter(&top_highlighted_array[i], 0, 0);
+    C2D_SpriteSetCenter(&top_dark_array[i], 0, 0);
+    C2D_SpriteSetCenter(&info_array[i], 0, 0);
+    C2D_SpriteSetPos(&info_array[i], 4*16, 3*16);
+  }
+
+
+  int current_mode = TUTORIAL;
+
+  while (aptMainLoop()) {
+    hidScanInput();
+    u32 key_pressed = hidKeysDown();
+    if (key_pressed & KEY_B) {
+      output.game_mode = -1;
+      break;
+    } else if (key_pressed & KEY_A) {
+      output.game_mode = current_mode;
+      break;
+    } else if (key_pressed & KEY_DLEFT) {
+      current_mode = wrap(current_mode - 1, TUTORIAL + 1);
+    } else if (key_pressed & KEY_DRIGHT) {
+      current_mode = wrap(current_mode + 1, TUTORIAL + 1);
+    } 
+
+    C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
+    C2D_TargetClear(top_screen, colour_palette.background);
+    C2D_TargetClear(bottom_screen, colour_palette.background);
+    
+    C2D_SceneBegin(top_screen);
+
+    C2D_SpriteSetPos(&top_dark_array[wrap(current_mode - 1, TUTORIAL + 1)], 32, 56);
+    C2D_SpriteSetPos(&top_highlighted_array[current_mode], 114+32, 56);
+    C2D_SpriteSetPos(&top_dark_array[wrap(current_mode + 1, TUTORIAL + 1)], 228+32, 56);
+
+    C2D_DrawSprite(&top_dark_array[wrap(current_mode - 1, TUTORIAL + 1)]);
+    C2D_DrawSprite(&top_highlighted_array[current_mode]);
+    C2D_DrawSprite(&top_dark_array[wrap(current_mode + 1, TUTORIAL + 1)]);
+    
+    C2D_SceneBegin(bottom_screen);
+
+    C2D_DrawSprite(&bg_sprite);
+    C2D_DrawSprite(&info_array[current_mode]);
+   
+    C3D_FrameEnd(0);
+  }
+
+  
+  C2D_SpriteSheetFree(top_highlighted.sprite_sheet);
+  C2D_SpriteSheetFree(top_dark.sprite_sheet);
+  C2D_SpriteSheetFree(info.sprite_sheet);
+  C2D_SpriteSheetFree(bg.sprite_sheet);
+  output.valid = true;
+  return output;
+}
+
 // ==== UTILITIES ==== //
+
+int wrap(int index, int range) {
+  return (index % range + range) % range;
+}
 
 bool check_mastery(SaveFile* save_data, char* pilot) {
   if (strcmp(pilot, "shinji") == 0) {
