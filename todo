@@ -2,9 +2,8 @@ player suggestions:
   bully Shinji
 
 general:
+  fix ui audio -> no silence in beginning of file
   find warnings in code
-  add 
-  sound
   game
     add story elemnts/funny dialogue
 
@@ -22,6 +21,12 @@ specific:
 
 working on rn:
   DO NOT FORGET: load/free sfx+music, Mix_HaltMusic(), if needed: Mix_HaltChannel(-1)
+ 
+  adding audio to each function
   
-  switching buttons
+  
+  testing main_menu()
+  testing options menu()
 
+  implementing create_backup()
+  implementing credits()

@@ -270,6 +270,7 @@ enum SFX {
   SWITCH_SHORT,
   SWITCH_SHORT_ALT,
   WARNING,
+  BACK,
   TOTAL_SFX
 } SFX;
 
@@ -590,6 +591,7 @@ int selection_menu(C3D_RenderTarget* top_screen, C3D_RenderTarget* bottom_screen
 
   Sprite continue_button = load_sprite("romfs:/continue_button.t3x");
   if (!continue_button.valid) {
+    C2D_SpriteSheetFree(popup.sprite_sheet);
     log_error("ERROR: Failed to load romfs:/continue_button.t3x");
     return MENU_ERROR;
   }
@@ -604,6 +606,7 @@ int selection_menu(C3D_RenderTarget* top_screen, C3D_RenderTarget* bottom_screen
   if (!exit_button.valid) {
     log_error("ERROR: Failed to load romfs:/exit_button.t3x");
     C2D_SpriteSheetFree(continue_button.sprite_sheet);
+    C2D_SpriteSheetFree(popup.sprite_sheet);
     return MENU_ERROR;
   }
   C2D_Sprite exit_button_highlighted;
@@ -618,6 +621,7 @@ int selection_menu(C3D_RenderTarget* top_screen, C3D_RenderTarget* bottom_screen
     log_error("ERROR: Failed to load romfs:/new_game_button.t3x");
     C2D_SpriteSheetFree(continue_button.sprite_sheet);
     C2D_SpriteSheetFree(exit_button.sprite_sheet);
+    C2D_SpriteSheetFree(popup.sprite_sheet);
     return MENU_ERROR;
   }
   C2D_Sprite new_game_button_highlighted;
@@ -634,6 +638,26 @@ int selection_menu(C3D_RenderTarget* top_screen, C3D_RenderTarget* bottom_screen
 
   int option = MENU_NEW;
 
+
+  int sfx_count = 4;
+  int sfx_names[sfx_count];
+  
+  sfx_names[0] = SWITCH_SHORT;
+  sfx_names[1] = CONTINUE;
+  sfx_names[2] = BACK;
+  sfx_names[3] = POPUP;
+
+  SoundEffect sfx_array[sfx_count];
+
+  if (!load_sfx(sfx_count, sfx_names, sfx_array)) {
+    C2D_SpriteSheetFree(popup.sprite_sheet);
+    C2D_SpriteSheetFree(new_game_button.sprite_sheet);
+    C2D_SpriteSheetFree(continue_button.sprite_sheet);
+    C2D_SpriteSheetFree(exit_button.sprite_sheet);
+    log_error("ERROR: Failed to load SFX");
+    return MENU_ERROR;
+  }
+
   while (aptMainLoop()) {
     hidScanInput();
     u32 key_pressed = hidKeysDown();
@@ -641,22 +665,26 @@ int selection_menu(C3D_RenderTarget* top_screen, C3D_RenderTarget* bottom_screen
       if (option == MENU_EXIT) {
         continue;
       } else {
+        Mix_PlayChannel(-1, sfx_array[0].sfx, 0);
         option += 1;
       }
     } else if (key_pressed & KEY_DUP) {
       if (option == MENU_NEW) {
         continue;
       } else {
+        Mix_PlayChannel(-1, sfx_array[0].sfx, 0);
         option -= 1;
       }
     } else if (key_pressed & KEY_A) {
+      Mix_PlayChannel(-1, sfx_array[1].sfx, 0);
       if (option == MENU_NEW) {
+        Mix_PlayChannel(-1, sfx_array[3].sfx, 0);
         bool confirmed = false;
         while (!confirmed) {
           hidScanInput();
           u32 key_pressed_updated = hidKeysDown();
-          if (key_pressed_updated & KEY_A) { confirmed = true; }
-          if (key_pressed_updated & KEY_B) { break; }
+          if (key_pressed_updated & KEY_A) { Mix_PlayChannel(-1, sfx_array[1].sfx, 0); confirmed = true; }
+          if (key_pressed_updated & KEY_B) { Mix_PlayChannel(-1, sfx_array[2].sfx, 0); break; }
 
           C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
           C2D_TargetClear(top_screen, colour_palette.background);
@@ -695,11 +723,16 @@ int selection_menu(C3D_RenderTarget* top_screen, C3D_RenderTarget* bottom_screen
     C3D_FrameEnd(0);
   }
 
+
+  while (Mix_Playing(-1) > 0) {
+    SDL_Delay(1);
+  }
   
   C2D_SpriteSheetFree(popup.sprite_sheet);
   C2D_SpriteSheetFree(new_game_button.sprite_sheet);
   C2D_SpriteSheetFree(continue_button.sprite_sheet);
   C2D_SpriteSheetFree(exit_button.sprite_sheet);
+  free_sfx(sfx_count, sfx_array);
   return option;
 }
 
@@ -762,24 +795,46 @@ bool select_character(C3D_RenderTarget* top_screen, C3D_RenderTarget* bottom_scr
   int current_character = SHINJI;
   bool selected = false;
 
+
+  int sfx_count = 3;
+  int sfx_names[sfx_count];
+
+  sfx_names[0] = SWITCH_SHORT;
+  sfx_names[1] = BACK;
+  sfx_names[2] = CONTINUE;
+
+  SoundEffect sfx_array[sfx_count];
+  if (!load_sfx(sfx_count, sfx_names, sfx_array)) {
+    C2D_SpriteSheetFree(shinji.sprite_sheet);
+    C2D_SpriteSheetFree(asuka.sprite_sheet);
+    C2D_SpriteSheetFree(rei.sprite_sheet);
+    C2D_SpriteSheetFree(shinji_info.sprite_sheet);
+    log_error("ERROR: Failed to load SFX");
+    return false;
+  }
+
   while (aptMainLoop()) {
     hidScanInput();
     u32 key_pressed = hidKeysDown();
     if (key_pressed & KEY_DLEFT) {
+      Mix_PlayChannel(-1, sfx_array[0].sfx, 0);
       if (current_character == SHINJI) {
         current_character = REI;
       } else {
         current_character -= 1;
       }
     } else if (key_pressed & KEY_DRIGHT) {
+      Mix_PlayChannel(-1, sfx_array[0].sfx, 0);
       if (current_character == REI) {
         current_character = SHINJI;
       } else {
         current_character += 1;
       }
     } else if (key_pressed & KEY_A) {
+      Mix_PlayChannel(-1, sfx_array[2].sfx, 0);
       selected = true;
     } else if (key_pressed & KEY_B) {
+      Mix_PlayChannel(-1, sfx_array[1].sfx, 0);
       return false;
     }
 
@@ -840,6 +895,12 @@ bool select_character(C3D_RenderTarget* top_screen, C3D_RenderTarget* bottom_scr
 
     C3D_FrameEnd(0);
   }
+
+  while (Mix_Playing(-1) > 0) {
+    SDL_Delay(1);
+  }
+
+  free_sfx(sfx_count, sfx_array);
 
   C2D_SpriteSheetFree(shinji.sprite_sheet);
   C2D_SpriteSheetFree(asuka.sprite_sheet);
@@ -924,14 +985,32 @@ int main_menu(C3D_RenderTarget* top_screen, C3D_RenderTarget* bottom_screen, Col
   int selected_option = S_PLAY;
   bool selected = false;
 
+
+  int sfx_count = 2;
+  int sfx_names[sfx_count];
+
+  sfx_names[0] = SWITCH_SHORT;
+  sfx_names[1] = CONTINUE;
+
+  SoundEffect sfx_array[sfx_count];
+  if (!load_sfx(sfx_count, sfx_names, sfx_array)) {
+    C2D_SpriteSheetFree(main_menu_buttons.sprite_sheet);
+    C2D_SpriteSheetFree(main_menu_bg.sprite_sheet);
+    C2D_TextBufDelete(level_points.buffer);
+    log_error("ERROR: Failed to load SFX");
+    return -1;
+  }
+
   while (aptMainLoop()) {
     hidScanInput();
     u32 key_pressed = hidKeysDown();
     if (key_pressed & KEY_DDOWN) {
+      Mix_PlayChannel(-1, sfx_array[0].sfx, 0);
       if (selected_option == S_EXIT) { continue; } else { selected_option += 1; }
     } else if (key_pressed & KEY_DUP) {
+      Mix_PlayChannel(-1, sfx_array[0].sfx, 0);
       if (selected_option == S_PLAY) { continue; } else { selected_option -= 1; } 
-    } else if (key_pressed & KEY_A) { selected = true; }
+    } else if (key_pressed & KEY_A) { Mix_PlayChannel(-1, sfx_array[1].sfx, 0); selected = true; }
 
     C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
     C2D_TargetClear(top_screen, colour_palette.background);
@@ -970,6 +1049,12 @@ int main_menu(C3D_RenderTarget* top_screen, C3D_RenderTarget* bottom_screen, Col
 
     C3D_FrameEnd(0);
   }
+
+  while (Mix_Playing(-1) > 0) {
+    SDL_Delay(1);
+  }
+
+  free_sfx(sfx_count, sfx_array);
 
   C2D_SpriteSheetFree(main_menu_buttons.sprite_sheet);
   C2D_SpriteSheetFree(main_menu_bg.sprite_sheet);
@@ -1012,15 +1097,32 @@ int options_menu(C3D_RenderTarget* top_screen, C3D_RenderTarget* bottom_screen, 
   int option = SM_BACKUP_DATA;
   bool selected = false;
 
+
+  int sfx_count = 3;
+  int sfx_names[sfx_count];
+
+  sfx_names[0] = SWITCH_SHORT;
+  sfx_names[1] = CONTINUE;
+  sfx_names[2] = BACK;
+
+  SoundEffect sfx_array[sfx_count];
+  if (!load_sfx(sfx_count, sfx_names, sfx_array)) {
+    C2D_SpriteSheetFree(options_menu_buttons.sprite_sheet);
+    C2D_SpriteSheetFree(options_menu_bg.sprite_sheet);
+    log_error("ERROR: Failed to load SFX");
+    return -1;
+  }
+
   while (aptMainLoop()) {
     hidScanInput();
     u32 key_pressed = hidKeysDown();
     if (key_pressed & KEY_DUP) {
-      if (option == SM_BACKUP_DATA) { continue; } else { option -= 1; }
+      if (option == SM_BACKUP_DATA) { continue; } else { Mix_PlayChannel(-1, sfx_array[0].sfx, 0); option -= 1; }
     } else if (key_pressed & KEY_DDOWN) {
-      if (option == SM_CREDITS) { continue; } else { option += 1; } 
-    } else if (key_pressed & KEY_A) { selected = true; }
+      if (option == SM_CREDITS) { continue; } else { Mix_PlayChannel(-1, sfx_array[0].sfx, 0); option += 1; } 
+    } else if (key_pressed & KEY_A) { Mix_PlayChannel(-1, sfx_array[1].sfx, 0); selected = true; }
     else if (key_pressed & KEY_B) {
+      Mix_PlayChannel(-1, sfx_array[2].sfx, 0);
       C2D_SpriteSheetFree(options_menu_bg.sprite_sheet);
       C2D_SpriteSheetFree(options_menu_buttons.sprite_sheet);
       return SM_QUIT;
@@ -1048,6 +1150,12 @@ int options_menu(C3D_RenderTarget* top_screen, C3D_RenderTarget* bottom_screen, 
 
     C3D_FrameEnd(0);
   }
+
+  while (Mix_Playing(-1) > 0) {
+    SDL_Delay(1);
+  }
+
+  free_sfx(sfx_count, sfx_array);
 
   C2D_SpriteSheetFree(options_menu_buttons.sprite_sheet);
   C2D_SpriteSheetFree(options_menu_bg.sprite_sheet);
@@ -4459,7 +4567,7 @@ bool load_sfx(int audio_count, int audio_names[audio_count], SoundEffect audio_a
   audio_paths[SWITCH_SHORT] = "romfs:/audio/switch_short.ogg";
   audio_paths[SWITCH_SHORT_ALT] = "romfs:/audio/switch_short_alt.ogg";
   audio_paths[WARNING] = "romfs:/audio/warning.ogg";
-  audio_paths[EVANGELION_OP] = "romfs:/audio/evangelion_op.ogg";
+  audio_paths[BACK] = "romfs:/audio/back.ogg";
 
   for (int i = 0; i < audio_count; i++) {
     audio_array[i].sfx = Mix_LoadWAV(audio_paths[audio_names[i]]);
