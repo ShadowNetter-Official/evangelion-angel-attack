@@ -25,7 +25,8 @@ A.I. is only used to locate errors in the code when they show up. A.I. is **NOT*
 In evangelion-angel-attack you play as either Shinji, Asuka or Rei and face several angels in Undertale-style battles. You can choose different abilities and earn Level Points to upgrade your stats and unlock new abilities.
 
 ## Progress
-- [ ] Add audio
+- [x] Implement audio
+- [ ] Add audio to all menus
 - [x] Title screen
 - [ ] Create proper Makefile
 - [x] Options menu
