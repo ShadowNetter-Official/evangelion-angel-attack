@@ -17,6 +17,7 @@
 #include <string.h>
 #include <stdbool.h>
 
+#include "3ds/gfx.h"
 #include "3ds/os.h"
 #include "3ds/services/apt.h"
 #include "3ds/services/hid.h"
@@ -283,35 +284,39 @@ int wrap(int index, int range);
 
 int main(void) {
   system_init();
+
   if (!audio_init()) {
-    log_error("Failed to initialize audio");
+    log_error("ERROR: Failed to initialize audio");
     system_exit();
     return 1;
   }
 
-  log_error("Game Started");
+  log_error("GAME STARTED SUCCESSFULLY");
 
   C3D_RenderTarget* top_screen = C2D_CreateScreenTarget(GFX_TOP, GFX_LEFT);
   C3D_RenderTarget* bottom_screen = C2D_CreateScreenTarget(GFX_BOTTOM, GFX_LEFT);
-  
+
   Colours colour_palette = colours_init();
 
   if (!title_screen(top_screen, bottom_screen, colour_palette)) {
-    log_error("ERROR: Failed to load title screen");
+    log_error("ERROR: Failed to process title screen");
     system_exit();
     return 1;
   }
 
-  int continuation = selection_menu(top_screen, bottom_screen, colour_palette);
-  if (continuation == MENU_ERROR) {
-    log_error("ERROR: Failed to load selection menu");
+  int selection_menu_continuation = selection_menu(top_screen, bottom_screen, colour_palette);
+  if (selection_menu_continuation == MENU_ERROR) {
+    log_error("ERROR: Failed to process selection menu");
     system_exit();
     return 1;
-  } else if (continuation == MENU_EXIT) {
+  } else if (selection_menu_continuation == MENU_EXIT) {
+    log_error("USER QUIT GAME");
     system_exit();
     return 0;
+  } else if (selection_menu_continuation == MENU_NEW) {
+    log_error("CREATING SAVE FILE");
+    initialize_save_file();
   }
-  if (continuation == MENU_NEW) { initialize_save_file(); }
 
   SaveFile save_data = load_save_file();
   if (!save_data.valid) {
@@ -320,130 +325,120 @@ int main(void) {
     return 1;
   }
 
-  if (continuation == MENU_NEW) {
-    int select_character_output = select_character(top_screen, bottom_screen, colour_palette, &save_data);
-    if (!select_character_output) {
+  if (selection_menu_continuation == MENU_NEW) {
+    if (!select_character(top_screen, bottom_screen, colour_palette, &save_data)) {
       log_error("ERROR: Failed to select character or user quit");
       system_exit();
       return 1;
-    } else {
-      write_to_save_file(save_data);
     }
+    write_to_save_file(save_data);
   }
 
-  bool in_main_menu = true;
-  while (in_main_menu) {
-    int main_menu_continuation = main_menu(top_screen, bottom_screen, colour_palette, save_data);
-    if (main_menu_continuation == -1) {
+  while (true) {
+    int main_menu_continutation = main_menu(top_screen, bottom_screen, colour_palette, save_data);
+
+    if (main_menu_continutation == -1) {
       log_error("ERROR: Failed to process main menu");
       close_game(save_data);
       return 1;
-    }
-  
-    switch (main_menu_continuation) {
-      case S_EXIT:
-        close_game(save_data);
-        return 0;
-        break;
-      case S_OPTIONS:
-        bool in_options_menu = true;
-        while (in_options_menu) {
-          int options_continuation = options_menu(top_screen, bottom_screen, colour_palette);
-          if (options_continuation == -1) {
-            log_error("ERROR: Failed to process options menu");
-            close_game(save_data);
-            return 1;
-          }
-          switch (options_continuation) {
-            case SM_BACKUP_DATA:
-              if (!create_backup(top_screen, colour_palette)) {
-                log_error("ERROR: Failed to backup data");
-                close_game(save_data);
-                return 1;
-              }
-              break;
-            case SM_CREDITS:
-              if (!credits(top_screen, bottom_screen, colour_palette)) {
-                log_error("ERROR: Failed to process credits menu");
-                close_game(save_data);
-                return 1;
-              }
-              break;
-            case SM_QUIT:
-              in_options_menu = false;
-              break;
-          }
-        }
-        break;
-      case S_PLAY:
-        // TEST
-        GameModeOutput gmo = game_mode_menu(top_screen, bottom_screen, colour_palette);
-        if (!gmo.valid) {
-          log_error("ERROR: Failed to process game mode menu");
+    } else if (main_menu_continutation == S_EXIT) {
+      log_error("USER QUIT GAME");
+      close_game(save_data);
+      return 0;
+    } else if (main_menu_continutation == S_OPTIONS) {
+      while (true) {
+        int options_menu_continuation = options_menu(top_screen, bottom_screen, colour_palette);
+
+        if (options_menu_continuation == -1) {
+          log_error("ERROR: Failed to process options menu");
           close_game(save_data);
           return 1;
-        } else {
-          // TEMP
-        }
-        break;
-      case S_PILOT:
-        int pilot_menu_continuation = pilot_menu(top_screen, bottom_screen, colour_palette, &save_data);
-        switch (pilot_menu_continuation) {
-          case PS_ERROR:
-            log_error("ERROR: Failed to process pilot menu");
+        } else if (options_menu_continuation == SM_BACKUP_DATA) {
+          if (!create_backup(top_screen, colour_palette)) {
+            log_error("Failed to create data backup");
             close_game(save_data);
             return 1;
-            break;
-          case PS_NAME:
-            break;
-          case PS_ABILITIES:
-            AbilitiesMenuOutput abilities_main_menu_data = abilities_menu_main(top_screen, bottom_screen, colour_palette, &save_data);
-            switch (abilities_main_menu_data.return_code) {
-              case -1:
-                log_error("ERROR: Failed to process abilities main menu");
+          }
+        } else if (options_menu_continuation == SM_CREDITS) {
+          if (!credits(top_screen, bottom_screen, colour_palette)) {
+            log_error("ERROR: Failed to process credits menu");
+            close_game(save_data);
+            return 1;
+          }
+        } else if (options_menu_continuation == SM_QUIT) {
+          break;
+        }
+      }
+    } else if (main_menu_continutation == S_PLAY) {
+      // maybe put in a while true loop
+
+      GameModeOutput gmo = game_mode_menu(top_screen, bottom_screen, colour_palette);
+
+      if (!gmo.valid) {
+        log_error("ERROR: Failed to process game mode menu");
+        close_game(save_data);
+        return 1;
+      } else {
+        // TODO: identify selected game mode and act accordingly
+        // PLACEHOLDER:
+        log_error("PLACEHOLDER MENU");
+        close_game(save_data);
+        return 1;
+      }
+    } else if (main_menu_continutation == S_PILOT) {
+      while (true) {
+        int pilot_menu_continuation = pilot_menu(top_screen, bottom_screen, colour_palette, &save_data);
+
+        if (pilot_menu_continuation == PS_ERROR) {
+          log_error("ERROR: Failed to process pilot menu");
+          close_game(save_data);
+          return 1;
+        } else if (pilot_menu_continuation == PS_NAME) {
+          break;
+        } else if (pilot_menu_continuation == PS_ABILITIES) {
+          while (true) {
+            AbilitiesMenuOutput amo = abilities_menu_main(top_screen, bottom_screen, colour_palette, &save_data);
+
+            if (amo.return_code == -1) {
+              log_error("ERROR: Failed to process abilities main menu");
+              close_game(save_data);
+              return 1;
+            } else if (amo.return_code == 0) {
+              break;
+            } else if (amo.return_code == 1) {
+              if (!ability_shop(&save_data, top_screen, bottom_screen, colour_palette, amo.current_button)) {
+                log_error("ERROR: Failed to load ability shop");
                 close_game(save_data);
                 return 1;
-                break;
-              case 0:
-                break;
-              case 1:
-                if (!ability_shop(&save_data, top_screen, bottom_screen, colour_palette, abilities_main_menu_data.current_button)) {
-                  log_error("ERROR: Failed to load ability shop");
-                  close_game(save_data);
-                  return 1;
-                }
-              break;
+              }
             }
-            break;
-          case PS_SKINS:
-            if (!skins_menu(&save_data, top_screen, bottom_screen, colour_palette)) {
-              log_error("ERROR: Failed to load skins menu");
-              close_game(save_data);
-              return 1;
-            }
-            break;
-          case PS_MASTERY:
-            if (!mastery_menu(&save_data, top_screen, bottom_screen, colour_palette)) {
-              log_error("ERROR: Failed to load mastery menu");
-              close_game(save_data);
-              return 1;
-            }
-            break;
-          case PS_STATS:
-            if (!stats_menu(&save_data, top_screen, bottom_screen, colour_palette)) {
-              log_error("ERROR: Failed to load stats menu");
-              close_game(save_data);
-              return 1;
-            }
-            break;
+          }
+        } else if (pilot_menu_continuation == PS_SKINS) {
+          if (!skins_menu(&save_data, top_screen, bottom_screen, colour_palette)) {
+            log_error("ERROR: Failed to process skins menu");
+            close_game(save_data);
+            return 1;
+          }
+        } else if (pilot_menu_continuation == PS_MASTERY) {
+          if (!mastery_menu(&save_data, top_screen, bottom_screen, colour_palette)) {
+            log_error("ERROR: Failed to process mastery menu");
+            close_game(save_data);
+            return 1;
+          }
+        } else if (pilot_menu_continuation == PS_STATS) {
+          if (!stats_menu(&save_data, top_screen, bottom_screen, colour_palette)) {
+            log_error("ERROR: Failed to load stats menu");
+            close_game(save_data);
+            return 1;
+          }
         }
-        break;
+      }
     }
-
   }
-  
+
+  log_error("You're not supposed to see this, wtf");
   close_game(save_data);
-  return 0;
+  return 1;
 }
 
 bool title_screen(C3D_RenderTarget* top_screen, C3D_RenderTarget* bottom_screen, Colours colour_palette) {

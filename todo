@@ -2,16 +2,12 @@ player suggestions:
   bully Shinji
 
 general:
-  refactor main loop
-    remove switch
-    replace with if else
-    fix loops
   music
   game
     add story elemnts/funny dialogue
 
 current:
-  refactor main loop
+
 
 specific:
 
