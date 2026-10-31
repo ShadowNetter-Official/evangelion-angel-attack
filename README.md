@@ -50,3 +50,5 @@ Things I need help with currently:
 ## Credits
 
 cJSON library (used for interacting with the JSON save file): https://github.com/DaveGamble/cJSON.git
+Certain audio files (please don't nuke my house Nintendo): https://sounds.spriters-resource.com/game_boy_advance/pokemonemerald/asset/397734/
+A Cruel Angel's Thesis [8-Bit Cover] by SheepTune [8-bit Music]: https://www.youtube.com/watch?v=CQy1np1mOuo

@@ -2,12 +2,26 @@ player suggestions:
   bully Shinji
 
 general:
-  music
+  find warnings in code
+  add 
+  sound
   game
     add story elemnts/funny dialogue
 
 current:
-
+  add sfx to current ui
 
 specific:
+  check if waiting for ui audio to finish causes significant slow downs
+  switching buttons
+  pressing buttons
+  mastery unlock animation
+  not enough credits sound
+  upgrading stat
+
+
+working on rn:
+  DO NOT FORGET: load/free sfx+music, Mix_HaltMusic(), if needed: Mix_HaltChannel(-1)
+  
+  switching buttons
 

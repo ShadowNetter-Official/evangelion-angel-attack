@@ -21,6 +21,7 @@
 #include "3ds/os.h"
 #include "3ds/services/apt.h"
 #include "3ds/services/hid.h"
+#include "SDL/SDL_timer.h"
 #include "c2d/base.h"
 #include "c2d/font.h"
 #include "c2d/sprite.h"
@@ -199,6 +200,11 @@ typedef struct AbilitiesMenuOutput {
   int return_code;
 } AbilitiesMenuOutput;
 
+typedef struct SoundEffect {
+  Mix_Chunk* sfx;
+  bool should_play;
+} SoundEffect;
+
 enum MenuOptions {
   MENU_NEW,
   MENU_CONTINUE,
@@ -251,6 +257,27 @@ enum Buttons {
     ABILITIES
 };
 
+enum SFX {
+  CONTINUE,
+  DONE,
+  ERROR_SHORT,
+  JINGLE_LONG,
+  JINGLE_SHORT,
+  JINGLE_SHORTEST,
+  POPUP,
+  SAVE,
+  START,
+  SWITCH_SHORT,
+  SWITCH_SHORT_ALT,
+  WARNING,
+  TOTAL_SFX
+} SFX;
+
+enum MUSIC {
+  EVANGELION_OP,
+  TOTAL_MUSIC
+} MUSIC;
+
 
 void system_init(void);
 bool audio_init(void);
@@ -280,6 +307,10 @@ bool unlock_cutscene(char* pilot, Colours colour_palette, C3D_RenderTarget* top_
 bool stats_menu(SaveFile* save_data, C3D_RenderTarget* top_screen, C3D_RenderTarget* bottom_screen, Colours colour_palette);
 GameModeOutput game_mode_menu(C3D_RenderTarget* top_screen, C3D_RenderTarget* bottom_screen, Colours colour_palette);
 int wrap(int index, int range);
+bool load_music(int audio_count, int audio_names[audio_count], Mix_Music* audio_array[audio_count]);
+void free_music(int audio_count, Mix_Music* audio_array[audio_count]);
+void free_sfx(int audio_count, SoundEffect audio_array[audio_count]);
+bool load_sfx(int audio_count, int audio_names[audio_count], SoundEffect audio_array[audio_count]);
 
 
 int main(void) {
@@ -465,10 +496,42 @@ bool title_screen(C3D_RenderTarget* top_screen, C3D_RenderTarget* bottom_screen,
   bool increasing = false;
   C2D_AlphaImageTint(&tint, transparency);
 
+
+  
+  int sfx_count = 1;
+  int sfx_names[sfx_count];
+  sfx_names[0] = START;
+  SoundEffect sfx_array[sfx_count];
+  if (!load_sfx(sfx_count, sfx_names, sfx_array)) {
+    C2D_SpriteSheetFree(title_screen.sprite_sheet);
+    C2D_SpriteSheetFree(press_start.sprite_sheet);
+    log_error("ERROR: Failed to load SFX");
+    return false;
+  }
+  sfx_array[0].should_play = true;
+
+  int music_count = 1;
+  int music_names[music_count];
+  music_names[0] = EVANGELION_OP;
+  Mix_Music* music_array[music_count];
+  if (!load_music(music_count, music_names, music_array)) {
+    C2D_SpriteSheetFree(title_screen.sprite_sheet);
+    C2D_SpriteSheetFree(press_start.sprite_sheet);
+    free_sfx(sfx_count, sfx_array);
+    log_error("ERROR: Failed to load music");
+    return false;
+  }
+
+
+  Mix_PlayMusic(music_array[0], -1);
   while (aptMainLoop()) {
     hidScanInput();
     u32 key_pressed = hidKeysDown();
     if (key_pressed & KEY_START) {
+      if (sfx_array[0].should_play) {
+        Mix_PlayChannel(-1, sfx_array[0].sfx, 0);
+        sfx_array[0].should_play = false;
+      }
       break;
     }
 
@@ -500,9 +563,18 @@ bool title_screen(C3D_RenderTarget* top_screen, C3D_RenderTarget* bottom_screen,
     C3D_FrameEnd(0);
   }
 
+
+  while (Mix_Playing(-1) > 0) {
+    SDL_Delay(1);
+  }
+
+  Mix_HaltMusic();
+
   C2D_SpriteSheetFree(title_screen.sprite_sheet);
   C2D_SpriteSheetFree(press_start.sprite_sheet);
-  
+  free_music(music_count, music_array);
+  free_sfx(sfx_count, sfx_array);
+ 
   return true;
 
 }
@@ -4359,6 +4431,73 @@ GameModeOutput game_mode_menu(C3D_RenderTarget* top_screen, C3D_RenderTarget* bo
 }
 
 // ==== UTILITIES ==== //
+
+void free_sfx(int audio_count, SoundEffect audio_array[audio_count]) {
+  for (int i = 0; i < audio_count; i++) {
+    Mix_FreeChunk(audio_array[i].sfx);
+  }
+}
+
+void free_music(int audio_count, Mix_Music* audio_array[audio_count]) {
+  for (int i = 0; i < audio_count; i++) {
+    Mix_FreeMusic(audio_array[i]);
+  }
+}
+
+bool load_sfx(int audio_count, int audio_names[audio_count], SoundEffect audio_array[audio_count]) {
+  char* audio_paths[TOTAL_SFX];
+  
+  audio_paths[CONTINUE] = "romfs:/audio/continue.ogg";
+  audio_paths[DONE] = "romfs:/audio/done.ogg";
+  audio_paths[ERROR_SHORT] = "romfs:/audio/error_short.ogg";
+  audio_paths[JINGLE_LONG] = "romfs:/audio/jingle_long.ogg";
+  audio_paths[JINGLE_SHORT] = "romfs:/audio/jingle_short.ogg";
+  audio_paths[JINGLE_SHORTEST] = "romfs:/audio/jingle_shortest.ogg";
+  audio_paths[POPUP] = "romfs:/audio/popup.ogg";
+  audio_paths[SAVE] = "romfs:/audio/save.ogg";
+  audio_paths[START] = "romfs:/audio/start.ogg";
+  audio_paths[SWITCH_SHORT] = "romfs:/audio/switch_short.ogg";
+  audio_paths[SWITCH_SHORT_ALT] = "romfs:/audio/switch_short_alt.ogg";
+  audio_paths[WARNING] = "romfs:/audio/warning.ogg";
+  audio_paths[EVANGELION_OP] = "romfs:/audio/evangelion_op.ogg";
+
+  for (int i = 0; i < audio_count; i++) {
+    audio_array[i].sfx = Mix_LoadWAV(audio_paths[audio_names[i]]);
+    audio_array[i].should_play = false;
+    if (audio_array[i].sfx == NULL) {
+      log_error("ERROR: Failed to load:");
+      log_error(audio_paths[audio_names[i]]);
+
+      for (int j = 0; j < i; j++) {
+        Mix_FreeChunk(audio_array[j].sfx);
+      }
+      return false;
+    }
+  }
+
+  return true;
+}
+
+bool load_music(int audio_count, int audio_names[audio_count], Mix_Music* audio_array[audio_count]) {
+  char* audio_paths[TOTAL_MUSIC];
+
+  audio_paths[EVANGELION_OP] = "romfs:/audio/evangelion_op.ogg";
+
+  for (int i = 0; i < audio_count; i++) {
+    audio_array[i] = Mix_LoadMUS(audio_paths[audio_names[i]]);
+    if (audio_array[i] == NULL) {
+      log_error("ERROR: Failed to load:");
+      log_error(audio_paths[audio_names[i]]);
+      
+      for (int j = 0; j < i; j++) {
+        Mix_FreeMusic(audio_array[j]);
+      }
+      return false;
+    }
+  }
+
+  return true;
+}
 
 int wrap(int index, int range) {
   return (index % range + range) % range;
